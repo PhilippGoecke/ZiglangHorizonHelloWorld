@@ -1,4 +1,5 @@
 # ZiglangHorizonHelloWorld
 Ziglang Horizon Hello World
 
-https://harmonicom.github.io/horizon/
+https://ziglang.org/  
+https://harmonicom.github.io/horizon/  
