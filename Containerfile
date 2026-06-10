@@ -54,12 +54,21 @@ pub fn build(b: *std.Build) void {
 }
 EOF
 
-# src/main.zig: Hello world with optional NAME env var
+# src/main.zig: Hello world with optional "name" query parameter
 RUN mkdir -p src && cat > src/main.zig <<'EOF'
 const std = @import("std");
 const horizon = @import("horizon");
 
-var greet_name: []const u8 = "World";
+fn extractNameParam(target: []const u8) ?[]const u8 {
+    const q = std.mem.indexOfScalar(u8, target, '?') orelse return null;
+    var it = std.mem.splitScalar(u8, target[q + 1 ..], '&');
+    while (it.next()) |pair| {
+        if (std.mem.startsWith(u8, pair, "name=")) {
+            return pair[5..];
+        }
+    }
+    return null;
+}
 
 fn handler(
     ctx: *horizon.Context,
@@ -67,9 +76,9 @@ fn handler(
     res: *horizon.ResponseWriter,
 ) anyerror!void {
     _ = ctx;
-    _ = req;
+    const name = extractNameParam(req.target) orelse "World";
     var buf: [256]u8 = undefined;
-    const msg = try std.fmt.bufPrint(&buf, "Hello, {s}!\n", .{greet_name});
+    const msg = try std.fmt.bufPrint(&buf, "Hello, {s}!\n", .{name});
     try res.any().writeAll(msg);
 }
 
@@ -77,12 +86,6 @@ pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     defer _ = gpa.deinit();
     const allocator = gpa.allocator();
-
-    if (std.process.getEnvVarOwned(allocator, "NAME")) |n| {
-        greet_name = n;
-    } else |_| {
-        greet_name = "World";
-    }
 
     const addr = try std.net.Address.parseIp4("0.0.0.0", 8000);
 
@@ -92,7 +95,7 @@ pub fn main() !void {
     });
     defer server.deinit();
 
-    std.log.info("Listening on http://0.0.0.0:8000 (greeting: {s})", .{greet_name});
+    std.log.info("Listening on http://0.0.0.0:8000 (use ?name=YourName)", .{});
     try server.serve();
 }
 EOF
@@ -107,9 +110,8 @@ RUN apt-get update \
 WORKDIR /app
 COPY --from=build /app/zig-out/bin/hello_horizon /usr/local/bin/hello_horizon
 
-# NAME parameter: replaces "World" in greeting when set
-ARG NAME=World
-ENV NAME=${NAME}
+# Greeting name is provided per-request via the "name" query parameter, e.g.:
+#   curl "http://localhost:8000/?name=Alice"
 
 EXPOSE 8000
 ENTRYPOINT ["/usr/local/bin/hello_horizon"]
