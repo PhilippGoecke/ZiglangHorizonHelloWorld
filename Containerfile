@@ -1,13 +1,17 @@
 # ---- Build stage ----
 FROM debian:trixie-slim AS build
 
+ARG DEBIAN_FRONTEND=noninteractive
+
+RUN apt update && apt upgrade -y \
+  && apt install -y --no-install-recommends --no-install-suggests ca-certificates curl tar xz-utils minisign \
+  && rm -rf "/var/lib/apt/lists/*" \
+  && rm -rf /var/cache/apt/archives
+
 # Install Zig
 ARG ZIG_VERSION=0.16.0
 ARG ZIG_SHA256=70e49664a74374b48b51e6f3fdfbf437f6395d42509050588bd49abe52ba3d00
-RUN apt update \
-  && apt install -y --no-install-recommends curl tar xz-utils ca-certificates \
-  && rm -rf /var/lib/apt/lists/* \
-  && curl -fsSL -o /tmp/zig.tar.xz "https://ziglang.org/download/${ZIG_VERSION}/zig-linux-x86_64-${ZIG_VERSION}.tar.xz" \
+RUN curl -fsSL -o /tmp/zig.tar.xz "https://ziglang.org/download/${ZIG_VERSION}/zig-linux-x86_64-${ZIG_VERSION}.tar.xz" \
   && echo "${ZIG_SHA256}  /tmp/zig.tar.xz" | sha256sum -c - \
   && tar -xJ -C /opt -f /tmp/zig.tar.xz \
   && rm /tmp/zig.tar.xz \
