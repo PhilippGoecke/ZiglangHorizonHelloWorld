@@ -30,11 +30,13 @@ RUN cat > build.zig.zon <<'EOF'
     .dependencies = .{
         .horizon = .{
             .url = "https://github.com/HARMONICOM/horizon/archive/refs/tags/v0.1.7.tar.gz",
-            .hash = "sha256:a830e571b9b3c84d379bb9e6c51a6923175d323aeb4e2038cd7a023952ab3499",
         },
     },
 }
 EOF
+
+# Let zig compute and save the correct dependency hash
+RUN zig fetch --save=horizon "https://github.com/HARMONICOM/horizon/archive/refs/tags/v0.1.7.tar.gz"
 
 # build.zig
 RUN cat > build.zig <<'EOF'
