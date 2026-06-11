@@ -37,7 +37,8 @@ EOF
 
 # Let zig compute and save the correct dependency hash
 RUN zig init \
-  && zig fetch --save=horizon "https://github.com/HARMONICOM/horizon/archive/refs/tags/v0.1.7.tar.gz"
+  # && zig fetch --save=horizon "https://github.com/HARMONICOM/horizon/archive/refs/tags/v0.1.7.tar.gz"
+  && zig fetch --save-exact=horizon https://github.com/HARMONICOM/horizon/archive/refs/tags/v0.1.7.tar.gz
 
 # build.zig
 RUN cat > build.zig <<'EOF'
@@ -110,6 +111,7 @@ pub fn main() !void {
 }
 EOF
 
+RUN zig build run
 RUN zig build -Doptimize=ReleaseSafe
 
 # ---- Runtime stage ----
