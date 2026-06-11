@@ -111,14 +111,21 @@ RUN zig build -Doptimize=ReleaseSafe
 
 # ---- Runtime stage ----
 FROM debian:trixie-slim
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends ca-certificates libgcc-s1 \
-    && rm -rf /var/lib/apt/lists/*
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+RUN apt update && apt upgrade -y \
+  && apt install -y --no-install-recommends --no-install-suggests ca-certificates libgcc-s1 \
+  && rm -rf "/var/lib/apt/lists/*" \
+  && rm -rf /var/cache/apt/archives
+
 WORKDIR /app
+
 COPY --from=build /app/zig-out/bin/hello_horizon /usr/local/bin/hello_horizon
 
 # Greeting name is provided per-request via the "name" query parameter, e.g.:
 #   curl "http://localhost:8000/?name=Alice"
 
 EXPOSE 8000
+
 ENTRYPOINT ["/usr/local/bin/hello_horizon"]
