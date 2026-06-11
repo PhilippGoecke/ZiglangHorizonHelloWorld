@@ -30,7 +30,7 @@ RUN cat > build.zig.zon <<'EOF'
     .dependencies = .{
         .horizon = .{
             .url = "https://github.com/HARMONICOM/horizon/archive/refs/tags/v0.1.7.tar.gz",
-            .hash = "a830e571b9b3c84d379bb9e6c51a6923175d323aeb4e2038cd7a023952ab3499",
+            .hash = "sha256:a830e571b9b3c84d379bb9e6c51a6923175d323aeb4e2038cd7a023952ab3499",
         },
     },
 }
