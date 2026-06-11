@@ -25,7 +25,7 @@ RUN cat > build.zig.zon <<'EOF'
 .{
     .name = .hello_horizon,
     .version = "0.1.0",
-    .fingerprint = 0xxe072792d6c8ef880,
+    .fingerprint = 0xe072792d6c8ef880,
     .paths = .{""},
     .dependencies = .{
         .horizon = .{
