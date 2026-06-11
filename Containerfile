@@ -23,8 +23,9 @@ WORKDIR /app
 # build.zig.zon: fetch Horizon web framework
 RUN cat > build.zig.zon <<'EOF'
 .{
-    .name = "hello_horizon",
+    .name = .hello_horizon,
     .version = "0.1.0",
+    .fingerprint = 0x1234567890abcdef,
     .paths = .{""},
     .dependencies = .{
         .horizon = .{
