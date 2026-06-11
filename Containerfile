@@ -15,7 +15,7 @@ RUN curl -fsSL -o /tmp/zig.tar.xz "https://ziglang.org/download/${ZIG_VERSION}/z
   && echo "${ZIG_SHA256}  /tmp/zig.tar.xz" | sha256sum -c - \
   && tar -xJ -C /opt -f /tmp/zig.tar.xz \
   && rm /tmp/zig.tar.xz \
-  && mv "/opt/zig-linux-x86_64-${ZIG_VERSION}/zig" /usr/local/bin/zig
+  && mv "/opt/zig-x86_64-linux-${ZIG_VERSION}/zig" /usr/local/bin/zig
 
 WORKDIR /app
 
