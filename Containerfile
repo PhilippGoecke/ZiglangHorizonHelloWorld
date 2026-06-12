@@ -116,7 +116,8 @@ pub fn main() !void {
 EOF
 
 #RUN zig build run
-RUN zig build -Doptimize=ReleaseSafe
+RUN zig build --fetch \
+  && zig build -Doptimize=ReleaseSafe --verbose
 
 # ---- Runtime stage ----
 FROM debian:trixie-slim
