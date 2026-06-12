@@ -3,7 +3,7 @@ FROM debian:trixie-slim AS build
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt update && apt upgrade -y \
-  && apt install -y --no-install-recommends --no-install-suggests ca-certificates curl tar xz-utils minisign \
+  && apt install -y --no-install-recommends --no-install-suggests ca-certificates curl tar xz-utils minisign pkg-config libpcre2-dev \
   && rm -rf "/var/lib/apt/lists/*" \
   && rm -rf /var/cache/apt/archives
 
