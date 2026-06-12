@@ -105,7 +105,7 @@ pub fn main() !void {
     const addr = try std.net.Address.parseIp4("0.0.0.0", 8000);
 
     var server = try horizon.Server.init(allocator, .{
-        .address = addr,
+        .addr = addr,
         .handler = horizon.Handler.init(handler),
     });
     defer server.deinit();
