@@ -1,4 +1,3 @@
-# ---- Build stage ----
 FROM debian:trixie-slim AS build
 
 ARG DEBIAN_FRONTEND=noninteractive
@@ -9,8 +8,8 @@ RUN apt update && apt upgrade -y \
   && rm -rf /var/cache/apt/archives
 
 # Install Zig
-ARG ZIG_VERSION=0.16.0
-ARG ZIG_SHA256=70e49664a74374b48b51e6f3fdfbf437f6395d42509050588bd49abe52ba3d00
+ARG ZIG_VERSION=0.15.2
+ARG ZIG_SHA256=02aa270f183da276e5b5920b1dac44a63f1a49e55050ebde3aecc9eb82f93239
 RUN curl -fsSL -o /tmp/zig.tar.xz "https://ziglang.org/download/${ZIG_VERSION}/zig-x86_64-linux-${ZIG_VERSION}.tar.xz" \
   && echo "${ZIG_SHA256}  /tmp/zig.tar.xz" | sha256sum -c - \
   && tar -xJ -C /opt -f /tmp/zig.tar.xz \
@@ -30,15 +29,16 @@ RUN cat > build.zig.zon <<'EOF'
     .dependencies = .{
         .horizon = .{
             .url = "https://github.com/HARMONICOM/horizon/archive/refs/tags/v0.1.7.tar.gz",
+            .hash = "hotizon-0.1.7-aaziTImIAwAXltE3CvmMVSzYr1G5LvmeKJu3tB47Tafh",
         },
     },
 }
 EOF
 
 # Let zig compute and save the correct dependency hash
-RUN zig init \
+#RUN zig init \
   # && zig fetch --save=horizon "https://github.com/HARMONICOM/horizon/archive/refs/tags/v0.1.7.tar.gz"
-  && zig fetch --save-exact=horizon https://github.com/HARMONICOM/horizon/archive/refs/tags/v0.1.7.tar.gz
+#  && zig fetch --save-exact=horizon https://github.com/HARMONICOM/horizon/archive/refs/tags/v0.1.7.tar.gz
 
 # build.zig
 RUN cat > build.zig <<'EOF'
@@ -48,8 +48,7 @@ pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
-    const exe = b.addExecutable(.{
-        .name = "hello_horizon",
+    const exe_mod = b.createModule(.{
         .root_source_file = b.path("src/main.zig"),
         .target = target,
         .optimize = optimize,
@@ -59,7 +58,12 @@ pub fn build(b: *std.Build) void {
         .target = target,
         .optimize = optimize,
     });
-    exe.root_module.addImport("horizon", horizon.module("horizon"));
+    exe_mod.addImport("horizon", horizon.module("horizon"));
+
+    const exe = b.addExecutable(.{
+        .name = "hello_horizon",
+        .root_module = exe_mod,
+    });
 
     b.installArtifact(exe);
 }
@@ -111,7 +115,7 @@ pub fn main() !void {
 }
 EOF
 
-RUN zig build run
+#RUN zig build run
 RUN zig build -Doptimize=ReleaseSafe
 
 # ---- Runtime stage ----
