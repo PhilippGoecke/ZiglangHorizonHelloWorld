@@ -29,7 +29,7 @@ RUN cat > build.zig.zon <<'EOF'
     .dependencies = .{
         .horizon = .{
             .url = "https://github.com/HARMONICOM/horizon/archive/refs/tags/v0.1.7.tar.gz",
-            .hash = "hotizon-0.1.7-aaziTImIAwAXltE3CvmMVSzYr1G5LvmeKJu3tB47Tafh",
+            .hash = "horizon-0.1.7-aaziTImIAwAXltE3CvmMVSzYr1G5LvmeKJu3tB47Tafh",
         },
     },
 }
